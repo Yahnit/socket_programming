@@ -69,8 +69,9 @@ while(1)
     printf("Client: %s\n",buffer );
     send(new_socket , request_input , strlen(request_input) , 0 );  // use sendto() and recvfrom() for DGRAM
     printf("Server: Requested the Client to enter the file to be downloaded...\n");
-    char file_name[BUFFERSIZE];
-    file_name[0] = 0;
+    char file_name[BUFFERSIZE]="";
+    
+    printf("file_name before is %s\n",file_name);
     read(new_socket,file_name,1024);
     printf("%s\n",file_name);
     printf("Server: The client has requested to download %s file\n",file_name);

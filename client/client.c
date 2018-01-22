@@ -47,20 +47,19 @@ int main(int argc, char const *argv[])
         return -1;
     }
 
-    while(1)
-    {
+
     send(sock , hello , strlen(hello) , 0 );  // send the message.
     printf("Client: I just sent a request to the server to download a file!\n");
     valread = read( sock , buffer, 1024);  // receive message back from server, into the buffer
     printf("Server :%s\n",buffer );
     char file_name[BUFFERSIZE];
     file_name[0] = 0;
-    fgets(file_name, BUFFERSIZE , stdin);
-    file_name[strlen(file_name)-1]=0;
-    printf("The file name is :  %s\n",file_name);
+    //fgets(file_name, BUFFERSIZE , stdin);
+    scanf("%s",file_name);
+    //file_name[strlen(file_name)-1]=0;
+    printf("Client: Server is requested to download %s file\n",file_name);
     send(sock,file_name,strlen(file_name),0);
 
-    break;
-  }
+
     return 0;
 }
