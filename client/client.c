@@ -56,35 +56,24 @@ int main(int argc, char const *argv[])
     printf("Server :%s\n",buffer );
     char file_name[BUFFERSIZE];
     file_name[0] = 0;
-    //fgets(file_name, BUFFERSIZE , stdin);
     scanf("%s",file_name);
-    //file_name[strlen(file_name)-1]=0;
     printf("Client: Server is requested to download %s file\n",file_name);
     send(sock,file_name,strlen(file_name),0);
     char buffer2[1024] = "";
     valread = read(sock,buffer2,1024);
     printf("Server : %s\n",buffer2);
 
-    // valread = read(sock,buffer3,1024);
-    // printf("Data received is: %s",buffer3);
-
-  //  FILE * fp = fopen(file_name,"a");
-  //  fwrite(buffer3,1,strlen(buffer3),fp);
-  char buffer3[1024]="";
+    char buffer3[1024]="";
     int fildes = open(file_name,O_CREAT | O_RDWR);
-//    printf("fildes is %d\n",fildes);
     while((valread = read(sock,buffer3,1024))>0)
     {
-        printf("val = %d\n",valread);
-       //printf("Data received is: %s",buffer3);
-//      printf("Succesfully receiving data...\n");
-    //  fwrite(buffer3,1,strlen(buffer3),fp);
       int temp = write(fildes,buffer3,valread);
-      printf("Writing done....\n");
-//      printf("temp = %d\n",temp);
+      if(temp<1024)
+      {
+        printf("The file has been successfully downloaded\n");
+        break;
+      }
     }
-    if(valread==-1)
-    printf("Read error...\n");
-  //  fclose(fp);
+   close(fildes);
     return 0;
 }
