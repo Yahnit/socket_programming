@@ -53,62 +53,67 @@ int main(int argc, char const *argv[])
         perror("listen");
         exit(EXIT_FAILURE);
     }
-while(1)
-{
-    // returns a brand new socket file descriptor to use for this single accepted connection. Once done, use send and recv
-    printf("hello!!  Server is up and running...\n");
-
     if ((new_socket = accept(server_fd, (struct sockaddr *)&address,
                        (socklen_t*)&addrlen))<0)
     {
         perror("accept");
         exit(EXIT_FAILURE);
     }
-//    printf("%d\n",new_socket);
-    valread = read( new_socket , buffer, 1024);  // read infromation received into the buffer
-    printf("Client: %s\n",buffer );
-    send(new_socket , request_input , strlen(request_input) , 0 );  // use sendto() and recvfrom() for DGRAM
-    printf("Server: Requested the Client to enter the file to be downloaded...\n");
+while(1)
+{
+    // returns a brand new socket file descriptor to use for this single accepted connection. Once done, use send and recv
+    printf("hello!!  Server is up and running...\n");
+
+
     char file_name[BUFFERSIZE]="";
 
     read(new_socket,file_name,1024);
     printf("Server: The client has requested to download %s file\n",file_name);
-    char dnldn[1024] = "The file is downloading...\n";
-    send(new_socket,dnldn,strlen(dnldn),0);
 
+    int rc_fd, dst_fd, n, err;
+    FILE * src_fd;
 
-    int src_fd, dst_fd, n, err;
-    char * dest = malloc(1024);
-    dest[0] = 0;
-    strcat(dest,"./../client/");
-    strcat(dest,file_name);
-    src_fd = open(file_name, O_RDONLY);
-    if(src_fd == -1)
-    {
-      printf("Server: Sorry the file could not be found\n");
-      continue;
-    }
-    dst_fd = open(dest, O_CREAT | O_WRONLY);
+    src_fd = fopen(file_name, "r");
+    // if(src_fd == NULL)
+    // {
+    //   char *no_file="Sorry! File not Found";
+    //   printf("Server: Sorry the file could not be found\n");
+    //   send(new_socket , no_file , strlen(no_file) , 0 );  // use sendto() and recvfrom() for DGRAM
+    //   printf("Message sent\n");
+    //   continue;
+    // }
+  //  dst_fd = open(dest, O_CREAT | O_WRONLY);
+  send(new_socket,request_input,strlen(request_input),0);
 
-
+    printf("About to enter the loop...\n");
     while (1) {
-        err = read(src_fd, buffer, 4096);
+        err = fread(buffer,1,1024,src_fd);
         if (err == -1) {
             printf("Error reading file.\n");
             exit(1);
         }
-        n = err;
-
-        if (n == 0) break;
-
-        err = write(dst_fd, buffer, n);
-        if (err == -1) {
-            printf("Error writing to file.\n");
-            exit(1);
+        printf("buffer is : %s\n",buffer);
+        if(err>0)
+        {
+          printf("Sending Data....\n");
+          send(new_socket,buffer,sizeof(buffer),0);
+          printf("data sent...");
         }
+
+        if(err<1024)
+        {
+          if(feof(src_fd))
+            printf("End of FIle...\n");
+          if(ferror(src_fd))
+            printf("error reading\n");
+          break;
+        }
+
     }
 
-    printf("Yeay! The file has been downloaded\n");
+  //  printf("Yeay! The file has been downloaded\n");
+    break;
 }
+  close(new_socket);
     return 0;
 }

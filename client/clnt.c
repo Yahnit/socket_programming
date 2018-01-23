@@ -20,7 +20,7 @@ int main(int argc, char const *argv[])
     struct sockaddr_in address;
     int sock = 0, valread;
     struct sockaddr_in serv_addr;
-    char *hello = "I want to download a file from the server :P ";
+    //char *hello = "I want to download a file from the server :P ";
     char buffer[1024] = {0};
     if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0)
     {
@@ -48,20 +48,31 @@ int main(int argc, char const *argv[])
     }
 
 
-    send(sock , hello , strlen(hello) , 0 );  // send the message.
+  //  send(sock , hello , strlen(hello) , 0 );  // send the message.
     printf("Client: I just sent a request to the server to download a file!\n");
-    valread = read( sock , buffer, 1024);  // receive message back from server, into the buffer
-    printf("Server :%s\n",buffer );
-    char file_name[BUFFERSIZE];
-    file_name[0] = 0;
+  //  valread = read( sock , buffer, 1024);  // receive message back from server, into the buffer
+  //  printf("Server :%s\n",buffer );
+    char file_name[BUFFERSIZE]="";
     //fgets(file_name, BUFFERSIZE , stdin);
     scanf("%s",file_name);
     //file_name[strlen(file_name)-1]=0;
     printf("Client: Server is requested to download %s file\n",file_name);
     send(sock,file_name,strlen(file_name),0);
-    char buffer2[1024] = "";
-    valread = read(sock,buffer2,1024);
-    printf("Server : %s\n",buffer2);
+    char *buffer1 = "";
 
+    // valread = read(sock,buffer1,1024);
+    //  printf("valread is : %d\n",valread);
+    //  printf("Message from server is :%s\n",buffer1);
+
+    FILE * fp = fopen(file_name,"a");
+    while((valread = read(sock,buffer1,1024))>=0)
+    {
+      printf("Succesfully receiving data...\n");
+      fwrite(buffer1,1,valread,fp);
+    }
+    if(valread<0)
+    printf("Read error..\n");
+
+    close(sock);
     return 0;
 }
