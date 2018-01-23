@@ -11,6 +11,8 @@
 #include <sys/uio.h>
 #include <unistd.h>
 #include <arpa/inet.h>
+#include <fcntl.h>
+#include <unistd.h>
 #define PORT 8080
 #define BUFFERSIZE 1024
 
@@ -63,11 +65,26 @@ int main(int argc, char const *argv[])
     valread = read(sock,buffer2,1024);
     printf("Server : %s\n",buffer2);
 
-    char buffer3[1024]="";
-    valread = read(sock,buffer3,1024);
-    printf("Data received is: %s",buffer3);
+    // valread = read(sock,buffer3,1024);
+    // printf("Data received is: %s",buffer3);
 
-    
-
+  //  FILE * fp = fopen(file_name,"a");
+  //  fwrite(buffer3,1,strlen(buffer3),fp);
+  char buffer3[1024]="";
+    int fildes = open(file_name,O_CREAT | O_RDWR);
+//    printf("fildes is %d\n",fildes);
+    while((valread = read(sock,buffer3,1024))>0)
+    {
+        printf("val = %d\n",valread);
+       //printf("Data received is: %s",buffer3);
+//      printf("Succesfully receiving data...\n");
+    //  fwrite(buffer3,1,strlen(buffer3),fp);
+      int temp = write(fildes,buffer3,valread);
+      printf("Writing done....\n");
+//      printf("temp = %d\n",temp);
+    }
+    if(valread==-1)
+    printf("Read error...\n");
+  //  fclose(fp);
     return 0;
 }
