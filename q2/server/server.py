@@ -12,6 +12,7 @@ while True:
     print("Hello!! Server is up and running...")
     conn, addr = s.accept()
     filename = conn.recv(1024)
+    filename = './Data/' + filename
     print filename
     my_file = Path(filename)
     if not my_file.is_file():
@@ -20,7 +21,6 @@ while True:
         continue
 
     conn.send("The file is being downloaded")
-
     print 'Got connection from', addr
     f = open(filename,'rb')
     l = f.read(1024)
