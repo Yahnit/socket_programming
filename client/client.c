@@ -63,5 +63,11 @@ int main(int argc, char const *argv[])
     valread = read(sock,buffer2,1024);
     printf("Server : %s\n",buffer2);
 
+    char buffer3[1024]="";
+    valread = read(sock,buffer3,1024);
+    printf("Data received is: %s",buffer3);
+
+    
+
     return 0;
 }

@@ -77,35 +77,42 @@ while(1)
     send(new_socket,dnldn,strlen(dnldn),0);
 
 
-    int src_fd, dst_fd, n, err;
-    char * dest = malloc(1024);
-    dest[0] = 0;
-    strcat(dest,"./../client/");
-    strcat(dest,file_name);
-    src_fd = open(file_name, O_RDONLY);
-    if(src_fd == -1)
+    int  n, err;
+    FILE * src_fd;
+
+    src_fd = fopen(file_name, "r");
+    if(src_fd == NULL)
     {
       printf("Server: Sorry the file could not be found\n");
       continue;
     }
-    dst_fd = open(dest, O_CREAT | O_WRONLY);
+//    dst_fd = open(dest, O_CREAT | O_WRONLY);
 
-
+    char buffer2[1024]="";
     while (1) {
-        err = read(src_fd, buffer, 4096);
+        err = fread(buffer2, 1,1024,src_fd);
         if (err == -1) {
             printf("Error reading file.\n");
             exit(1);
         }
-        n = err;
 
-        if (n == 0) break;
-
-        err = write(dst_fd, buffer, n);
-        if (err == -1) {
-            printf("Error writing to file.\n");
-            exit(1);
+        printf("buffer is : %s\n",buffer2);
+        if(err>0)
+        {
+          printf("Sending Data....\n");
+          send(new_socket,buffer2,sizeof(buffer2),0);
+          printf("data sent...");
         }
+
+        if(err<1024)
+        {
+          if(feof(src_fd))
+            printf("End of FIle...\n");
+          if(ferror(src_fd))
+            printf("error reading\n");
+          break;
+        }
+
     }
 
     printf("Yeay! The file has been downloaded\n");
