@@ -14,47 +14,40 @@ while True:
     print("Hello!! Server is up and running...")
     conn, addr = s.accept()
     no_files = conn.recv(1024)
-    time.sleep(0.1)
-    print no_files
+    time.sleep(0.01)
     no_files = int(no_files)
-    print no_files
     file_names = []
     file_sizes = []
+
     for i in range(no_files):
         file_name = conn.recv(1024)
-        time.sleep(0.1)
-    #    file_name = './Data/' + file_name
+        time.sleep(0.01)
         file_names.append(file_name)
-        size = os.path.getsize(file_name)
-        file_sizes.append(size)
-
-    print file_names
-    print file_sizes
+        my_file = Path(file_name)
+        if my_file.is_file():
+            size = os.path.getsize(file_name)
+            file_sizes.append(size)
+        else:
+            file_sizes.append(-1)
 
     for i in range(no_files):
         conn.send(str(file_sizes[i]))
-        print file_sizes[i]
-        time.sleep(0.1)
+        time.sleep(0.01)
 
     for i in range(no_files):
         filename = file_names[i]
-        print filename
-        my_file = Path(filename)
-        if not my_file.is_file():
-            conn.send("Sorry! The file was not found!")
+        if file_sizes[i] == -1:
             print("Sorry! The file was not found!")
             continue
 
-        conn.send(" ")
-        time.sleep(0.2)
+        time.sleep(0.5)
         print 'Got connection from', addr
         f = open(filename,'rb')
         l = f.read(1024)
         while (l):
            conn.send(l)
-           print('Sent ',repr(l))
+        #   print('Sent ',repr(l))
            l = f.read(1024)
         f.close()
-    #
-    # print('Done sending')
+        print("The file has been successfully downloaded");
     conn.close()
