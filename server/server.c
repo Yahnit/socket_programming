@@ -78,15 +78,19 @@ while(1)
     FILE * src_fd;
     int err;
     src_fd = fopen(file_name, "r");
-    if(src_fd == NULL)
-    {
-      printf("Server: Sorry the file could not be found\n");
-      continue;
-    }
+
     char dnldn[1024] = "The file is downloading...\n";
     char not_found[1024] = "Sorry! The file could not be found!\n";
-    
+
+      if(src_fd == NULL)
+      {
+        printf("Server: Sorry the file could not be found\n");
+        send(new_socket,not_found,strlen(not_found),0);
+       continue;
+      }
+    else
     send(new_socket,dnldn,strlen(dnldn),0);
+
 
     char buffer2[1024]="";
     while (1) {

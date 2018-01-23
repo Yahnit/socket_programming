@@ -62,6 +62,9 @@ int main(int argc, char const *argv[])
     char buffer2[1024] = "";
     valread = read(sock,buffer2,1024);
     printf("Server : %s\n",buffer2);
+    char compare[1024] = "Sorry! The file could not be found!\n";
+    if(strcmp(buffer2,compare)==0)
+      return 0;;
 
     char buffer3[1024]="";
     int fildes = open(file_name,O_CREAT | O_RDWR);
